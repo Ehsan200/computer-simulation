@@ -18,7 +18,7 @@ class Layer:
     @property
     def highest_priority_scheduler(self) -> QueueScheduler:
         # todo: get by highest priority
-        return self._queue_schedulers[0]
+        return self._queue_schedulers[self.highest_priority_scheduler_index]
 
     @property
     def highest_priority_scheduler_index(self) -> int:
