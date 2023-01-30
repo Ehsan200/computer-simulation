@@ -2,7 +2,9 @@ from typing import Tuple, List
 
 from job import Job
 from layer import Layer
-from utils import JobCreator, JobDispatcher, JobLoader
+from utils.job_loader import JobLoader
+from utils.job_creator import JobCreator
+from utils.job_dispatcher import JobDispatcher
 
 
 class Simulator:
@@ -31,7 +33,7 @@ class Simulator:
     @property
     def _should_load_jobs(self):
         return self._current_time % self._check_duration_time == 0 and \
-               self._layers[1].jobs_length_in_queues < self._check_job_count
+            self._layers[1].jobs_length_in_queues < self._check_job_count
 
     def _add_jobs_to_layer_one(self, jobs: List[Job]):
         for job in jobs:
@@ -45,13 +47,14 @@ class Simulator:
             if self._should_load_jobs:
                 JobLoader.load(
                     scheduler=self._layers[1].highest_priority_scheduler,
-                    jobs=self._layers[0].schedulers[0].all_jobs,
+                    previous_scheduler=self._layers[0].schedulers[0],
                     k=self._check_job_count,
                 )
 
             JobDispatcher.dispatch(layer=self._layers[1])
 
             self._current_time += 1
+            print(f'current time -> {self._current_time}')
 
         # todo: add logs ...
         print('simulation done!')

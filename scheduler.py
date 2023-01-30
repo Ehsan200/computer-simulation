@@ -36,9 +36,14 @@ class QueueScheduler:
         self._jobs.append(job)
 
     def dequeue_job(self) -> BaseJob:
-        if not len(self.uncompleted_jobs):
-            return IdleJob()
-        return self.uncompleted_jobs[0]
+        while True:
+            if not len(self.uncompleted_jobs):
+                return IdleJob()
+            job = self.uncompleted_jobs[0]
+            if job._total_waited_time < job.timeout:
+                return job
+            else:
+                self.pop_job(job)
 
     def pop_job(self, job):
         index = self.all_jobs.index(job)
