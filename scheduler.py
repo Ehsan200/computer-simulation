@@ -43,6 +43,7 @@ class QueueScheduler:
             if job._total_waited_time < job.timeout:
                 return job
             else:
+                job.expire()
                 self.pop_job(job)
 
     def pop_job(self, job):

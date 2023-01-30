@@ -39,14 +39,18 @@ class Job(BaseJob):
     _duration: int
     _waited_time: Dict[str, int]
     _timeout: int
+    _is_expired: bool
+    _arrival_time: int
 
-    def __init__(self, priority: int, duration: int, timeout: int = math.inf):
+    def __init__(self, priority: int, duration: int, arrival_time, timeout: int = math.inf):
         super().__init__()
         self._id = str(IdGenerator.generate())
         self._priority = priority
         self._duration = duration
         self._waited_time = defaultdict(int)
         self._timeout = timeout
+        self._is_expired = False
+        self._arrival_time = arrival_time
 
     @property
     def _total_waited_time(self) -> int:
@@ -69,6 +73,9 @@ class Job(BaseJob):
     @property
     def timeout(self):
         return self._timeout
+
+    def expire(self):
+        self._is_expired = True
 
 
 class IdleJob(BaseJob):

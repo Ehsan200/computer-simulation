@@ -21,12 +21,14 @@ class Layer:
     @property
     def highest_priority_scheduler(self):
         # todo: get by highest priority
-        print(self.highest_priority_scheduler_index)
-        peeked_scheduler = self.highest_priority_scheduler_index
-        while peeked_scheduler < len(self._queue_schedulers) - 1:
-            if not len(self._queue_schedulers[peeked_scheduler].uncompleted_jobs):
-                peeked_scheduler += 1
-        return self._queue_schedulers[self.highest_priority_scheduler_index]
+        peeked_scheduler_idx = self.highest_priority_scheduler_index
+        peeked_scheduler = self._queue_schedulers[peeked_scheduler_idx]
+        for scheduler in [self._queue_schedulers[(peeked_scheduler_idx + j) % len(self._queue_schedulers)] for j in
+                          range(len(self._queue_schedulers))]:
+            if len(scheduler.uncompleted_jobs):
+                peeked_scheduler = scheduler
+                break
+        return peeked_scheduler
 
     @property
     def highest_priority_scheduler_index(self) -> int:
@@ -36,5 +38,5 @@ class Layer:
     @property
     def jobs_length_in_queues(self) -> int:
         return sum(
-            map(lambda scheduler: len(scheduler.all_jobs), self._queue_schedulers)
+            map(lambda scheduler: len(scheduler.uncompleted_jobs), self._queue_schedulers)
         )
